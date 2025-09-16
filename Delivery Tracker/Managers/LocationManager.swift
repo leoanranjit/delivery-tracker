@@ -8,11 +8,12 @@
 import SwiftUI
 import Combine
 import CoreLocation
+import MapKit
 
 class LocationManager: NSObject, ObservableObject {
     private let manager = CLLocationManager()
     private let subject = PassthroughSubject<CLLocation, Never>()
-    
+
     var publisher: AnyPublisher<CLLocation, Never> {
         subject.eraseToAnyPublisher()
     }
@@ -21,10 +22,20 @@ class LocationManager: NSObject, ObservableObject {
         super.init()
         manager.delegate = self
         manager.desiredAccuracy = kCLLocationAccuracyBest
+        manager.distanceFilter = 10
     }
     
     func requestPermission() {
-        manager.requestWhenInUseAuthorization()
+        switch manager.authorizationStatus {
+        case .notDetermined:
+            manager.requestWhenInUseAuthorization()
+        case .denied, .restricted:
+            if let url = URL(string: UIApplication.openSettingsURLString) {
+                UIApplication.shared.open(url)
+            }
+        default:
+            break
+        }
     }
     
     func start() {
