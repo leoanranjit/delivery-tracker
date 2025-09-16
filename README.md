@@ -22,5 +22,6 @@ An app made for take home assestment that tracks users location and records dist
 
 ## Possible Improvements
 - Persist trip history.
-- Show path on a map (MapKit integration).
+- Show path on a map while tracking.
 - Add unit tests for distance calculations.
+- Better handling of location permissions. (Possibly by using better alerts and messages)
