@@ -12,10 +12,15 @@ import MapKit
 
 class LocationManager: NSObject, ObservableObject {
     private let manager = CLLocationManager()
+    
     private let subject = PassthroughSubject<CLLocation, Never>()
-
     var publisher: AnyPublisher<CLLocation, Never> {
         subject.eraseToAnyPublisher()
+    }
+    
+    private let authorizationSubject = PassthroughSubject<CLAuthorizationStatus, Never>()
+    var authorizationPublisher: AnyPublisher<CLAuthorizationStatus, Never> {
+        authorizationSubject.eraseToAnyPublisher()
     }
     
     override init() {
@@ -59,7 +64,7 @@ extension LocationManager: CLLocationManagerDelegate {
     }
     
     func locationManagerDidChangeAuthorization(_ manager: CLLocationManager) {
-        print("Authorization status: \(manager.authorizationStatus.rawValue)")
+        authorizationSubject.send(manager.authorizationStatus)
     }
 }
 

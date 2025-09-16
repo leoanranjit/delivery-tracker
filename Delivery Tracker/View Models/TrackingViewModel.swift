@@ -38,6 +38,13 @@ class TrackingViewModel: ObservableObject {
                 self?.update(with: location)
             }
             .store(in: &cancellables)
+        
+        locationManager.authorizationPublisher
+            .receive(on: DispatchQueue.main)
+            .sink { [weak self] permission in
+                self?.checkAuthorization(with: permission)
+            }
+            .store(in: &cancellables)
     }
     
     func startTracking() {
@@ -82,6 +89,17 @@ class TrackingViewModel: ObservableObject {
             overSpeeding = true
         } else {
             overSpeeding = false
+        }
+    }
+    
+    private func checkAuthorization(with permission: CLAuthorizationStatus) {
+        switch permission {
+        case .denied, .restricted:
+            if let url = URL(string: UIApplication.openSettingsURLString) {
+                UIApplication.shared.open(url)
+            }
+        default:
+            break
         }
     }
 }
