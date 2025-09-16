@@ -9,6 +9,9 @@ import SwiftUI
 import MapKit
 
 struct ContentView: View {
+    
+    @StateObject private var locationManager = LocationManager()
+
     var body: some View {
         ZStack {
             Map()
@@ -48,6 +51,10 @@ struct ContentView: View {
                 }
             }
             .padding()
+        }
+        .onAppear {
+            locationManager.requestPermission()
+            locationManager.start()
         }
     }
 }
